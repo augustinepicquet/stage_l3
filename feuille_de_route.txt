@@ -1,0 +1,287 @@
+LUN 2 JUIN
+  -visite locaux
+  -rdv claire matthieu
+    -définition des objectifs du stage : 
+      -cmprendre l'algo de marche aléatoire,
+      -recoder l'algo (en particulier pour les spanning trees) s'il est simple
+      -voir sur un département en particulier (correze je crois) les découpages qui sont générés et s'ils sont particuliers
+      -calculer l'inégalité avec la taille des coupes et voir sie elle est tight et pas du tout
+      -voir en pondérant les noeuds : comment trouver le spanning tree : uniforme ?
+      -voir en pondérant les arêtes (on ne veut pas avoir une trop grande frontière)
+  -visite biblio
+  -recupération des fichiers
+  
+  A FAIRE : 
+  -installer latex
+  -regarder si le code julia fonctionne
+  -améliorer le code juila pour écrire les formes une seule fois et les colorier plutot que de les dessiner beaucoup de fois!
+  
+  
+ MAR 3 JUIN
+ 
+   -lecture de l'article de DeFord, Duchin et Solomon (58pages), compréhension de la marche aléatoire utilisée
+   -installation de julia et latex
+   -tentative (échec) de faire fonctionne le code de decoupageColorieTex.jl
+   
+   A FAIRE
+    -comprendre le code de decoupageColorieTex.jl OK
+    -vérifier l'installation de latex
+    
+MER 4 JUIN
+  -installation de latex sans soucis
+  -ok pour julia
+  -lecture d'articles sur l'algo de wilson (en particulier celui cité dans le papier de Recom) : étrange car différent de ce que attendu (bon finalement c'est différent de ce que David avait dit mais tranquilou pour lui c'est la mm chose, peut être) : tentative de comparaison avec le module Recom utilisé
+  RDV DAVID : 
+   -utilisent spanning tree avec poids aléatoires avec kruskal -~ distribution non uniforme, pas l'objectif principal de ce qu'on veut faire
+   OBJECTIF(S) : 
+    -aller voir o`u est l'inégalité voulue
+    -coder l'algo de sampling de découpage avec wilson pour ensuite pouvoir avoir la distribution et pouvoir faire des tirages aléatoires pour estimer la distibution en fonction de paramêtres qu'on définira plus tard
+    -idée possible : faire la même chose en utilisant l'algo
+  
+  A FAIRE
+   -trouver o`u est la génération de spanning tree dans le module pour trouver quel algo est utilisé, wilson ou non : ils ont utilisé wilson dans le passé, mais utilisent un kruskal avec des poids aléatoires (ce qui leur permet d'ajouter des facteurs sur ces poids pour favoriser le choix de telle ou telle arête)
+   -faire un .sh pour générer les dessins coloriés (en fait non, il suffit de passer en param les fichiers (en modifiant les 0x en x si x plus petit que 10)
+   
+JEU 5 JUIN
+  -début du code de Recom
+  -
+  
+  A FAIRE : 
+   -problème dans la condition de partition en deux circo de l'unification de deux circos : cf feuille.Il faut modifier ça, sinon on arrive à un truc qui génère des partitions bizarres.
+   -vérifier qu'il n'y a pas un risque de ne pas atteindre certains découpages ie que a et b soient des découpages valides et que pour tout "chemin" entre a et b il y ait un c qui ne soit pas valide, ie que cela crée une sorte de barrière
+   
+VEN 6 JUIN
+  -crise : il faut faire les affiches du R4T (en plus arrivée en retard bref)
+  matin : affiches
+  
+ 
+ 
+LUN 9 JUIN : Férié
+
+MAR 10 JUIN 
+  -arrivée assez tard (11h)
+  -repartie assez tot (15h30)
+  
+  RDV DAVID : 
+   - ok de
+  OBJECTIFS : 
+   -générer des cartes selon la distribution Recom (1000 itérations) et voir ce que ca donne : 
+     -est ce qu'il y a des cartes non atteintes (quelle est la distribution (uniforme ?))
+     -voir par rapport à l'inégalité donnée par la taille de la coupe (cf un papier envoyé/dans le sujet de stage)
+     -voir si augmenter de 1,2, 50, 100 change qqch à la dist, si réduire d'e 1, 2, 100,500 change qqch ?
+     -voir si changer de configuration initiale change quelque chose ou non
+     -réfléchir à des mesures pour quantifier les découpages
+     
+MER 11 JUIN
+  -tentative de modification du programme pour générer les découpages selon la dist de recom
+  -problème : comment avoir l'indice de présence d'un découpage dans le tableau (fct très mal)
+  
+  obj aprem : faire un système tq dans un découpage écrit dans un fichier : la première circo qui apparait sera notée : 0, deuxième circo qui apparait 1 ... jusqu'à la dernière circo : recherche linéaire (en le nombre de cantons) et ça c'est cool : il faut modifier les dichiers de sortie de David pour avoir ça 
+  -on a reussi à faire un fichier qui comporte les découpage et leur nombre d'occurence d'apparition, reste à savoir l'afficher
+  -le truc de la recherche linéaire a été fait, mais pas la modif des fichier de DS, on les recalcule à chaque lecture de ses fichiers
+  
+  A FAIRE : 
+   -faire l'affichage des découpage en fonction de leur proba d'apparition
+   -faire les "vraies" stats -~ a priori impression que ça se groupe surtout sur certains découpages 
+   -voir par rapport à l'inégalité de David
+   
+JEU 12 JUIN
+  -test de la distribution sur différentes instances (dpt 9, 50) avec différents découpages de départ, en générant 100 samples avec 1000 itérations chacun -~ on voit bien une idée de proba inversement prop à la taille de la coupe -~ à checker !
+  
+  
+  
+  -on est quand même sacrément sur une inégalité asymptotique : comment faire pour la comparer avec de petites valeurs ? -~ il y a une ineg dans landau dans le fichier : ok
+  
+VEN 13 JUIN 
+  - tentative de connexion ssh
+  - tentative d'implémentation de kruskal : si utilise uf sans completion des chemins, obtient t-on un arbre valide ?
+  
+  RDV DAVID
+   -les samples semblent se concentrer sur les découpages ayant une petite coupe, on se demande si ça ne se concentre pas justement trop sur les petites coupes, ce qui donnerait que la distribution ne serait pas vraiment selon la taille de la coupe (enfin je pense que si, juste que l'inégalité ne serait pas tight, ce qui est une chose qu'on voulait évaluer par l'expérience!) . En effet, selon l'inégalité, s'il y a un facteur 2 entre deux tailles de coupes, alors la proba doit etre 4 fois plus grande (environ) (et pas beaucoup plus que 4 sinon ça fait tout capoter, à vérifier -~ ici c'est l'idée que l'inégalité ne serait pas tight (ou au moins pas tight partout))
+   -la distance euclidienne n'est pas forcément la bonne, cf distance de géographes entre deux points = le nombre de personnes entre ces deux points (avec un cylindre ou non, pas clair) globalement : comment le généraliser pour les frontières
+   -idée d'utiliser kruskal avec du bruit (mon idée)
+   -récupération des fichiers
+   -NB : on ne peut pas utiliser la distance euclidienne, il faut une distance ORTHODROMIQUE (géodésique plutot je pense) (vérifier) (ie qui prenne en compte la rondeur de la terre)
+   -Exemple de département qui a des frontières très différentes : doubs (notamment il y a la ville et des cantons avec une forme très étrange) (mais en général ont beaucoup de découpages différents)
+   
+   OBJECTIFS : 
+   -histogramme avec la taille de la coupe en abscisse et en ordonné le nb découpage et la proba d'apparition (peut être des colonnes avec plusisuers couleurs, une pour chaque découpage)
+   -voir comment ajouter la pondération des arêtes
+   -voir à quel point il y a un lien entre nombre de spanning tree et taille de la coupe
+   -déssiner les graphes plutot que les département pour avoir une idée en regardant la topologie du graphe
+   -possibilité de faire un tirage avec une idée de duplication d'arêtes proportionnelle à la taille de l'arête en question : ça nous donne un tirage selon la distribution du produit des poids (ie plus un arbre a un produit de ses poids élevés, plus il aura de chances d'être tiré)
+   -regarder s'il y a des choses qui ne sont pas coupées ou si par le découpage avec recom (exemple : communautés de communes (fleuves ?))
+   algo de kirchoff et theorème des matrices de ...pour calculer le nombre de spanning tree
+   
+   
+LUN 16 JUIN : 
+ -création des histogrammes du nombre d'apparition dans la génération avec Recom
+ -avancé sur la génération de spanning tree avec kruskal et les poids aléatoires
+ 
+ RDV CLAIRE & David (visio)
+  -explicarion du rdv de vendredi
+  -idée selon laquelle le cas à deux circos dans un dpt doit être connu totalement, en tout cas la distribution
+  
+ A FAIRE 
+  -créer les diagramme cardinal de la coupe en abscisse, nombre de spanning tree en ordonnée
+  -essayer de comprendre parfaitement le cas à deux circos dans un dpt
+  -faire plus d'itérations (100 c'est pas assez) pour voir si les proba d'apparition sont les même pour une taille de coupe donnée
+  NB : pour le cas de 2 circos, pas besoin de faire x itérations, 1 suffit, car on refusionne à chaque fois 
+  
+  
+MAR 17 JUIN
+ -coder le calcul du nombre de spannng forest en fonction d'un découpage
+ -automatisation pour créer les fichiers sortie_numDep_bis.txt avec le cardinal de la coupe et le nombre de spanning forest 
+ -dessin de courbes avec les valeurs : interessant (on dirait une exponentielle)
+ 
+ Obj pour l'aprem : 
+   -OK modifier le code pour que le graphique soit plus beau (avoir deux axes verticaux, avoir des légendes tout ça)
+   -faire la même chose pour l'histogramme d'hier (ajouter le nombre de découpages sur le coté droit)
+   -analyser les données mises en lumières par ces graphiques
+   -faire le graphique pour tous les départements à 5% si rapide non?
+   -Problème de foret couvrante dans les territoires non connexes non?
+   
+   -finalement j'ai été à un séminaire sur les H-free graphs : pas eu le temps de faire beaucoup de choses....
+   
+   
+   
+MER 18 JUIN
+
+  OBJECTIFS : 
+   -générer des données (ou bien le faire pendant la nuit, à voir xD)
+    (générer des samples, les tableaux associés, et les deux histos)
+    histo nb_spanning tree en fonction de taille coupe -² OK
+    (générer les fichiers avec les tailles de coupe et les nombres de spanning tree) OK
+   -utiliser le serveur de calcul de l'irif
+   
+   
+  13H30 : RDV Claire Matthieu IRIF (+ david en visio normalement)
+    -montré les graphiques de nb spanning tree en fonction du card de la coupe
+    -on peut mettre en log l'ordonnée pouravoir une belle droite c'est cool
+    -discussion de la structure des arêtes qui peuvent couper dans l'arbre : c'est un arbre (cf sur papier je l'ai écrit)
+    -on veut avoir la choix de l'arête qui coupe en ayant l'arbre de wilson en O(n) (alors que le faisait en O(n²) avant (n = taille de l'arbre) (pour cela faire des tableaux tq chaque noeud coco son fils et son père et son/ses frères
+    
+    OBJECTIFS :
+    -faire des calculs avec le serveur de calcul de l'irif
+    -réfléchir à la structure des arêtes de l'arbre
+    -améliorer l'algo en conséquence
+    -faire les graphiques nombres d'occurence du découpage en fonction du nombre de spanning tree
+    -penser à répondre à david s'il envoie un mail pour envoyer au géographe 
+    -voir si c'est toujours vrai en faisant ça sur des graphes à 20% plutot que 5%
+    -calculer la constante de l'article avec l'inégalité
+    -calculer les valeurs de K_1 et k_2 pour nos graphes pour pouvoir tester les inégalités sans trop de problèmes
+    -faire un graphique qui donne la valeur de l'inégalité en abscisse et en ordonnée
+    
+    
+JEU 19 JUIN 
+  Questions : comment représenter graphiquement l'inégalité ? car dépend de deux découpages à la fois : il faudrait un graphique en 3D qui aurait en abscisse les deux découpages considérés et en ordonné le quotient des proba et en même temps la partie minorant l'inégalité... -~ pas fou à représenter
+  OU bien en 2D en jouant sur la couleur des points pour avoir la distance (ie partir vers le bleu pour si différence positive, rouge sinon et tendre vers le noir s'il y a un gros écart (sinon tourner vers un plus clair mais pas non plus du blanc quoi)
+ 
+  
+  
+  
+  -légère erreur sur le code de recom je pense (le truc pour partitionner les arbres plus efficacement) mais bon il faudra chercher quoi....
+  COMMENT ON OBTIENT LE GRAPHE DUAL JE SUIS PERDUE -~ truc avec un ondonnancement des arêtes en fonction de l'angle et compter à partir de ça
+  
+  
+VEN 20 JUIN 
+  -reflexion sur le graphe dual  comment l'obtenir ? (idée de cycles à partir de la mat adj OU complétion des arêtes du fichier .out pour faire le graphe des intersections mais on obtient des noeuds en plus je pense
+
+  13h30 ou 14h : RDV Claire Matthieu ! (sans david)
+    CF mail pour david et claire du vendredi 20 juin pour explication
+    
+    NB : idée du dual qui peut avoir des multis arêtes 
+    
+ LUN 23 JUIN
+   -vérifier l'équivalence entre l'intersection de plus grande arité = nb faces du graphe dual : je pense que la structure pour stocker le graphe et son dual simultanément donne une preuve assez immédiate OK
+   -calcul de k_2 de manière pratique (ie modif l'algo pour) OK
+   
+   NB : possibilité d'erreur dans l'algo si deux intersections sont reliées par un unique segment : n'arrive essentiellement jamais je pense
+   
+   -calcul de l'inégalité raffinée dans programme : valeurs non réeelement concluentes (pas assez de sampling)
+   OBJ de l'après midi : 
+    -utiliser le serveur de l'irif pour faire des calculs !  OK (ne fonctionne pas tout le temps a priori)
+    -faire un bon gros readme pour expliquer les fichiers tout ça car je m'embrouille (et il y a plusieurs versions différentes) (OK, ça avance)
+    -il faudrait peut etre ajouter le nombre total de samples dan ke ficheir tableau_distribution .... 
+    
+MAR 24 JUIN 
+  -utilisation du ssh pour faire des calculs : c'est très long, donc il faudrait optimiser pour avoir un calcul beaucoup plus rapide !!
+  -sur dpt 21 (cote d'or (ou cote d'armor jsp)) calcul (5 circos) de 100 samplings avec 1000 itérations chacunes, on va voir ce que ça va donner ! 
+  
+  -étude de la preuve du lemme pour vendredi 
+  
+  
+  RDV Claire et David (en visio)
+   -montré les graphiques avec la différence entre coté gauche et coté drit de l'équation -~ modification en quotient plutot que différence
+   
+   OBJECTIFS : 
+    -comprendre la preuve de l'inégalité pour vendredi 27
+    -essayer de faire des graphiques coté droit en ord, coté gauche en abscisse et différence de tailles de coupe en couleur
+    -commencer à réfléchir aux mails de jean jsp-qui et la fille (annie ou marie ou bref)
+    -regarder si on peut avoir une majoration plutot que seulement une minoration : voir avec la fct inverse : normalement on obtient bien une majoration : vérifier (mais en vrai bizarre car borne trop faible selon moi mais bon)
+    
+MER 25 JUIN 
+  -deuxième lecture de la preuve de l'inégalité (pendant toute la matinée, la productivité n'est pas wtf)
+  
+  Obj de l'aprem : regarder ce qu'on peut faire avec des frontières pondérées, pour préparer le rdv de vendredi
+   sinon je peux aussi réparer l'amélioration de l'algo qui utilise la structure d'arbre des arêtes qui coupent
+   ou bien je peux aussi faire des calculs en tout genre sur le serveur de l'irif
+   
+JEU 26 JUIN : 
+  -David a répondu à mon mail avec beaucoup de questions : objectifs : relire la démo et répondre aux questions de David
+  -relire la démo à présenter vendredi OK 
+  -faire l'implémentation pondérée 
+  -lire la démo de effective resistance = proba d'être pris dans un unifomly random spanning tree (MOYEN)
+  -envoyer mail récap du dernier rdv (avec claire et David en visio au début)
+  -faire les trucs sur la courbe log de la frontière : pour ça il faudra probablement faire des calculs assez nombreux
+  -réparer le deuxième histogramme qui n'affiche que les axes et pas les données ce qui est quand même assez dommage
+  
+  
+VEN 27 JUIN 
+  -relire la preuve que je dois présenter à 14h
+  
+  -faire faire des calculs au serveur de l'irif (sur dpt à découapges uniquement à 20%)
+  
+  
+  RDV avec Claire et David (visio) de 14h à 14h30 pour présenter la preuve de l'inégalité intéressante
+    -ils ont constaté que la preuve était plus technique que ce qu'ils pensaient, donc deux possibilité : soit abandonner, soit y passer pas mal de temps pour avoir une bonne idée de ce qui se passe derrière la preuve (algèbre (linéaire) des graphes)
+    -finalement la preuve est bien appliquable, il suffit de prendre alpha grand
+    
+  
+  RDV avec Claire, David et au moins un géographe de 14h30 à 15h30 pour discuter de ce qu'est la compacité
+    -le géographe semblait un peu à l'ouest, a pensé qu'on n'avait pas d'algo qui samplait avec des poids alors qu'on peut facilement adapter recom
+    
+  Objectifs : 
+    -la semaine prochaine David est en vacances donc seule claire est là
+    -ca peut être bien de calculer les pentes des courbes en log et de comparer entre les départements
+    -attention, peut etre utile de ne pas utiliser sur chaque dpt mais de choisir un certain sous ensemble pour plus tard
+    -j'aimerais boucler la partie code ie faire des trucs tels que on ait un truc intéressant et homogène niveau code
+      -donc il faudrait coder : 
+        -l'opti avec la structure d'arbre pour trouver les arêtes qui coupent
+        -la marche aléatoire avec des arêtes pondérées
+        
+        
+  Conseil de david : ne pas hésiter à dire quand on ne comprends pas qqch
+  
+  
+LUN 30 JUIN
+  CODEEEE
+  -avancée sur le code avec arêtes pondérées
+    
+    
+    
+    
+    
+    
+  POSSIBLE DE FAIRE : 
+  -faire fonctionner opti quiutilise structure des aretes qui coupent
+  -mettre des poids sur les aretes et développer l'algo pour s'en occuper (distance géodésique)
+    -améliorer le code juila pour écrire les formes une seule fois et les colorier plutot que de les dessiner beaucoup de fois!
+    -regarder ce que ça donne avec Kruskal (en non pondéré)
+       -déssiner les graphes plutot que les département pour avoir une idée en regardant la topologie du graphe
+   -possibilité de faire un tirage avec une idée de duplication d'arêtes proportionnelle à la taille de l'arête en question : ça nous donne un tirage selon la distribution du produit des poids (ie plus un arbre a un produit de ses poids élevés, plus il aura de chances d'être tiré)
+   -regarder s'il y a des choses qui ne sont pas coupées ou si par le découpage avec recom (exemple : communautés de communes (fleuves ?))
+   algo de kirchoff et theorème des matrices de ...pour calculer le nombre de spanning tree
+     -idée selon laquelle le cas à deux circos dans un dpt doit être connu totalement, en tout cas la distribution
+        -Problème de foret couvrante dans les territoires non connexes non?
+        -faire des graphiques (ex : l'inégalité, distibution en fonction du nombre de spanning tree)
