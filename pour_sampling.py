@@ -5,17 +5,21 @@
 
 #<>
 
+from copy import *
+
 #pour les histogrammes
 import matplotlib.pyplot as plt  # Module pour tracer les graphiques
 import numpy as np
-import pandas as pd
-import seaborn as sns
+# import pandas as pd
+# import seaborn as sns
 
-import copy, math
-import time
-import sys
-import random
-import signal
+
+import math, random
+# import copy, math
+# import time
+# import sys
+# import random
+# import signal
 
 ##################################
 ##################################
@@ -142,7 +146,7 @@ def lecture():
 
 # la normalisation n'est pas incroyable : on doit faire une deuxième fct
 #on met les params pour de lautomatisation pour calculer taille coupe et nb arbrs couvrant et faire les graphiques entre les deux
-def lecture_bis(): #nomFichierEntree, nomFichierDecoupInit):
+def lecture_bis(nomFichierEntree, nomFichierDecoupInit):
 
     mon_fichier = open(nomFichierEntree, "r")
     contenu = mon_fichier.readlines()
@@ -215,8 +219,8 @@ def lecture_bis(): #nomFichierEntree, nomFichierDecoupInit):
         decoup_bien_forme = []
         for elt in decoupage:
             decoup_bien_forme.append(int(elt))
-        print("decoupage : ")
-        print(decoup_bien_forme)
+        # print("decoupage : ")
+        # print(decoup_bien_forme)
         if len(decoupage) != nbCantons:
             print("ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh" + str(len(decoupage)))
             #raise ZeroDivisionError
@@ -283,7 +287,7 @@ def calcule_k_1_et_k2(numDep): #enfin, seulement k_2 pour l'instant -> finalemen
         Ls.append(li)
 
 
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
     print(liste_adj)
@@ -382,7 +386,7 @@ def long(seg):
 ## Renvoie la matrice d'adjacence du graphe des cantons
 def graphadj(nc,Lc,ns,Ls):
     print("##############################################")
-    print(Ls)
+    # print(Ls)
     mat=[]
     for i in range(nc):
         mat.append([0]*nc)
@@ -390,7 +394,7 @@ def graphadj(nc,Lc,ns,Ls):
         if (cant2(seg)>0): ##le canton n'est pas en limite du departement
             mat[cant1(seg)][cant2(seg)]=1
             mat[cant2(seg)][cant1(seg)]=1
-    print(mat)
+    # print(mat)
     return mat
 
 ### Renvoie la liste d'adjacence du graphe
@@ -940,6 +944,12 @@ def un_tour_de_Recom(liste_adj, part_en_c, moyenne_en_c, Lc, epsilon, nb_c):
     # print("on a trouvé un truc cutable, youpi")
     ind_random = random.randint(0, len(cut_edge) -1)
 
+    # nb_aretes_qui_coupent = len(cut_edge)
+    # if nb_aretes_qui_coupent in dico_nb_aretes_qui_coupent[0][1]:
+    #     dico_nb_aretes_qui_coupent[0][1][nb_aretes_qui_coupent] +=1 
+    # else : 
+    #     dico_nb_aretes_qui_coupent[0][1][nb_aretes_qui_coupent] =1
+
 
     # print("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
     # print(T)
@@ -966,8 +976,8 @@ def moyenne_initiale(decoupage_inital, nb_circ, Lc):
     somme = 0
     for j in range(len(decoupage_inital)):
         somme += popu(Lc[j])
-    print("somme")
-    print(somme)
+    # print("somme")
+    # print(somme)
     return somme/nb_circ
 
 
@@ -984,12 +994,14 @@ def genere_un_decoupage_selon_la_decomp_recom(liste_adj, Lc, epsilon, decoupage_
     
     moy_en_c = moyenne_initiale(decoupage_initial, nb_circ, Lc)
     print(moy_en_c)
-
-    for i in range (nb_tours):
-    #for i in range(5):
-        # print("après un tour de recom on a trouvé : ")
-        # print(decoupage)
+    if nb_circos == 2 : 
         decoupage, moy_en_c = un_tour_de_Recom(liste_adj, decoupage,moy_en_c, Lc, epsilon, nb_circ)
+    else : 
+        for i in range (nb_tours):
+        #for i in range(5):
+            # print("après un tour de recom on a trouvé : ")
+            # print(decoupage)
+            decoupage, moy_en_c = un_tour_de_Recom(liste_adj, decoupage,moy_en_c, Lc, epsilon, nb_circ)
 
     print("découpage renvoyééééé")
     print(decoupage)
@@ -1059,23 +1071,23 @@ def indice_decoupage(tab_decoup, decoup, nb_circ):
 
 
 def main():
-    
+    nb_circos = 3
+    nb_tours = 1000
     
     print("on se lance dans le main ")
 
     # à changer si on n'est pas sur les mêmes fichiers .out !!
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     print("combien de tours :   ")
 
     #on fixe le nombre de tours à la main ici 1000
-    nb_tours = 1000 # int(input())
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
     epsilon = taux
     print("decoupage initial")
     print(decoup_init[0])
-    L = genere_un_decoupage_selon_la_decomp_recom(liste_adj, Lc, epsilon, decoup_init[0], nb_tours, nci )
-    calculsortie([L], nc, Lc, ns, Ls, nci)
+    L = genere_un_decoupage_selon_la_decomp_recom(liste_adj, Lc, epsilon, decoup_init[0], nb_tours, nb_circos )
+    calculsortie([L], nc, Lc, ns, Ls, nb_circos)
     print("a priori tout à été écrit dans le fichier : " + nomFichierSortie)
     exit(0)
 
@@ -1090,7 +1102,7 @@ def formalise_decoupage( decoupage, nb_circo):
             nb_en_c += 1
         ind_en_c += 1
 
-    print(dico)
+    # print(dico)
 
 
     #donc on a créé un dico de remplacement
@@ -1140,17 +1152,17 @@ def calcule_inegalite(nom_fichier_tableau_sample):
 # calcule_inegalite("trucs_interressants/dpt_9_100_samples_1000_iterations_depuis_config_12.txt")
 # calcule_inegalite("trucs_interressants/dpt_50_100_samples_1000_iterations_depuis_config_34.txt")
 
-def genere_distribution(nb_decoupages, indice_debut): #, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie):
+def genere_distribution(nb_decoupages, indice_debut, nb_circos, dico_nb_aretes_qui_coupent): #, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie):
 
 
 
     print("on se lance dans le genere_distribution ")
 
     # à changer si on n'est pas sur les mêmes fichiers .out !!
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     #ces deux lignes ne servent à rien, sont overlap par le paramètre !! en fait ce sont deux trucs différents
     print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
-    nb_tours = 10 #int(input())
+    nb_tours = 100 #int(input())
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
     print(mat_adj)
@@ -1158,111 +1170,41 @@ def genere_distribution(nb_decoupages, indice_debut): #, nomFichierEntree, nomFi
     epsilon = taux
     print("decoupage initial")
     print(decoup_init[indice_debut])
-    raise ZeroDivisionError
+    # raise ZeroDivisionError
 
     monFichier=open(nomFichierSortie,"w")
     F = []
+    
     for i in range(nb_decoupages):
         print("~~~~~~~~~~~~~~~~~~~~~~~~ " + str(i) + " ~~~~~~~~~~~~~~~~~~~~~~")
-        F = (genere_un_decoupage_selon_la_decomp_recom(liste_adj, Lc, epsilon, decoup_init[indice_debut], nb_tours, nci))
-        F_prime = formalise_decoupage(F, nci)
+        F = (genere_un_decoupage_selon_la_decomp_recom(liste_adj, Lc, epsilon, decoup_init[indice_debut], nb_tours, nb_circos))
+        F_prime = formalise_decoupage(F, nb_circos)
         card_coupe = calcule_card_de_la_coupe(F_prime, mat_adj)
 
         
 
 
         for li in F_prime:
-            #monFichier.write("Sol"+"\t"+"FracPop"+"\t")
-            ## Calcul de la population totale par circonscription
-            # popula=[0]*nci
-            #on écrit le découpage en question
-
-
-
 
             monFichier.write(str(li)+" ") 
         print(card_coupe)
         monFichier.write(str(card_coupe))
         monFichier.write("\n")
 
-    monFichier.write("decoup_initiale :  " + str(formalise_decoupage(decoup_init[indice_debut], nci)))
-
-    # L = [0] * len(decoup_init)
-
-    # for i in range(nb_decoupages):
-    #     print("on en a généré "+ str(i) + "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-    #     sample = (genere_un_decoupage_selon_la_decomp_recom(liste_adj, Lc, epsilon, decoup_init[indice_debut], nb_tours, nci ))
-    #     print(decoup_init)
-    #     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    #     # print(sample)
-    #     # for decalage in range(nci):
-    #     indice_decoup = indice_decoupage(decoup_init, sample, nci)
-    #     print(sample)
-    #         # if sample in decoup_init:
-    #         #     print("decalage : " + str(decalage))
-    #         #     print(sample)
-    #         #     indice_decoup = decoup_init.index(sample)
-    #         #     break
-    #         # else :
-    #         #     for ind in range(len(sample)):
-    #         #         sample[ind] = (sample[ind] + 1) % nci
-    #     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~é")
-    #     print(indice_decoup)
-    #     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    #     assert(0<= indice_decoup < len(L))
-    #     L[indice_decoup] += 1
-
-
-    # monFichier=open(nomFichierSortie,"w")
-    # poputotale=0
-    # monFichier.write(str(nb_decoupages) + " " + str(indice_debut) + "distribution avec " + "x échantillons en partant du découpage y \n")
-    # for i in range(nc):
-    #     poputotale=poputotale+popu(Lc[i])
-    # if int(numDep) < 10 : 
-    #     monFichier.write("0" + numDep + "\n")# + str(nbcirc) + " ")   
-    # else :
-    #     monFichier.write(numDep + "\n")# + str(nbcirc) + " ")    
-    # monFichier.write(str(len(L))+"\n\n") #combien de decoupages possibles officiels
-
-
-    # #Guti : normalement ici il n'y aura qu'un elt dans L, puisqu'on ne génère qu'un découpage à chaque fois
-
-    # for li in L:
-    #     #monFichier.write("Sol"+"\t"+"FracPop"+"\t")
-    #     ## Calcul de la population totale par circonscription
-    #     # popula=[0]*nci
-    #     monFichier.write(str(li))
-    #     #on écrit le découpage en question
-    #     # for ci in li:
-    #     #     monFichier.write(str(ci)+" ")
-
-
-    #     # for j in range(nc):
-    #     #     popula[li[j]]=popula[li[j]]+popu(Lc[j])
-    #     # frac=[0]*nci
-    #     # for j in range(nci):
-    #     #     frac[j]=nci*1.0*popula[j]/poputotale
-    #     #     monFichier.write(str(round(frac[j],3))+" ")
-        
-        
-    #     monFichier.write("\n")
-        
-        ## Calcul du perimetre de chaque circonscription
-        #perim=perimetreDecoupage(li,nbcirc,nbs,Ls)
-        #perimtotal=0
-        #for j in range(nbcirc):
-        #    perimtotal=perimtotal+perim[j]
-        #monFichier.write("PerimTot"+"\t"+str(perimtotal)+"\t")
-        #monFichier.write("Num circonscription par canton \t")
+    monFichier.write("decoup_initiale :  " + str(formalise_decoupage(decoup_init[indice_debut], nb_circos)))
     monFichier.close()
     print(nb_tours)
     
     print("a priori tout à été écrit dans le fichier : " + nomFichierSortie)
+
+    dico_nb_aretes_qui_coupent = [(numDep,{})] + dico_nb_aretes_qui_coupent
+
+    return dico_nb_aretes_qui_coupent
     
-def fait_le_tableau():
+def fait_le_tableau(numDep, nb_circos):
 
     #pour avoir la mat d'adj
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
@@ -1292,7 +1234,7 @@ def fait_le_tableau():
         # raise ZeroDivisionError
         
         e = e
-        rr = formalise_decoupage(e, nci)
+        rr = formalise_decoupage(e, nb_circos)
         taille_coupe = calcule_card_de_la_coupe(rr, mat_adj)
 
         CC = []
@@ -1302,7 +1244,7 @@ def fait_le_tableau():
             # print(int(decoupage[j]))
             CC[int(rr[j])].append(j)
 
-        nombre_forets_couvrantes = round(calcule_nombre_de_foret_couvrante(mat_adj, CC))
+        nombre_forets_couvrantes = math.ceil(calcule_nombre_de_foret_couvrante(mat_adj, CC))
 
 
         print(rr)
@@ -1362,6 +1304,9 @@ def fait_le_tableau():
 
     fichier_sortie.close()
 
+
+
+
 def calcule_card_de_la_coupe(decoupage, mat_adj):
     res = 0
     for i in range(len(mat_adj)):
@@ -1395,8 +1340,8 @@ def converti_en_tableau_de_tableaux(dico, nb_elts_a_suppr):
 
 
 
-def fait_histogramme():
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+def fait_histogramme(numDep, nb_circos,nomFichierEntree, nomFichierDecoupInit, fichier_ecrire = None):
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
@@ -1404,8 +1349,8 @@ def fait_histogramme():
 
 
 
-
-    fichier_ecrire = "avec_dist_recom/tableau_sortie_Recom" + str(numDep) + ".txt"
+    if fichier_ecrire == None : 
+        fichier_ecrire = "avec_dist_recom/tableau_sortie_Recom" + str(numDep) + ".txt"
     fichier_tableau = open(fichier_ecrire, "r")
     decoupages_tableau = fichier_tableau.readlines()
     # a_supprimer = int(decoupages_possibles_avant[1].split()[0])
@@ -1426,9 +1371,9 @@ def fait_histogramme():
         if taille_coupe in dico : 
 
             #format : découpage, nombre d'apparition du découpage
-            dico[taille_coupe].append((decoup_en_c[:-2], (int(decoup_en_c[-2]))))
+            dico[taille_coupe].append((decoup_en_c[:-3], (int(decoup_en_c[-3]))))
         else :
-            dico[taille_coupe] = [(decoup_en_c[:-2], int(decoup_en_c[-2]))]
+            dico[taille_coupe] = [(decoup_en_c[:-3], int(decoup_en_c[-3]))]
 
 
 
@@ -1436,6 +1381,7 @@ def fait_histogramme():
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     tab_ordonne, t_decoupages_associes, tab_taille_coupe = converti_en_tableau_de_tableaux(dico, 0)
         
+    
 
 
     #bidouille : 
@@ -1468,13 +1414,13 @@ def fait_histogramme():
     plt.legend()
     
     plt.savefig("graphiques/nb_occ_en_fct_taille_coupe/" + str(numDep) + ".png")
-    # plt.show()
+    plt.show()
 
 
 
 #fait l'histogramme nombre d'occurence en fonction du nombre de spanning forest
-def fait_histogramme_bis():
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+def fait_histogramme_bis(numDep,nb_circos, nomFichierEntree, nomFichierDecoupInit, fichier_ecrire = None):
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
@@ -1482,8 +1428,8 @@ def fait_histogramme_bis():
 
 
 
-
-    fichier_ecrire = "avec_dist_recom/tableau_sortie_Recom" + str(numDep) + ".txt"
+    if fichier_ecrire == None : 
+        fichier_ecrire = "avec_dist_recom/tableau_sortie_Recom" + str(numDep) + ".txt"
     fichier_tableau = open(fichier_ecrire, "r")
     decoupages_tableau = fichier_tableau.readlines()
     # a_supprimer = int(decoupages_possibles_avant[1].split()[0])
@@ -1496,13 +1442,15 @@ def fait_histogramme_bis():
 
     for i in range(2, nb_decoupages+2):
         decoup_en_c = decoupages_tableau[i].split()
-        nb_f = int(decoup_en_c[-2])
+        print(decoup_en_c)
+        nb_f = math.ceil(float(decoup_en_c[-2]))
         
         if nb_f in dico : 
 
             #format : découpage, nombre d'apparition du découpage
             dico[nb_f].append((decoup_en_c[:-3], int(decoup_en_c[-3])))
         else :
+            print(decoup_en_c[-3])
             dico[nb_f] = [(decoup_en_c[:-3], int(decoup_en_c[-3]))]
 
 
@@ -1547,21 +1495,7 @@ def fait_histogramme_bis():
 
 def algo_matrix_tree_theorem(mat_adj, liste_adj):
     lap_mat = mat_adj
-    # lap_mat = []
-    # for i in range(len(mat_adj)):
 
-    #     degre = 0
-    #     for j in range(len(mat_adj)):
-    #         if mat_adj[i][j] != 0:
-    #             degre += 1
-
-    #     lap_mat.append([0] * len(mat_adj))
-    #     for j in range(len(mat_adj)):
-    #         if i == j : 
-    #             # lap_mat[i][i] = len(liste_adj[i])
-    #             lap_mat[i][i] = degre
-    #         elif mat_adj[i][j] == 1:
-    #             lap_mat[i][j] = -1
 
     lap_mat = np.array(lap_mat)
 
@@ -1778,13 +1712,17 @@ def represente_taille_coupe_par_rapport_a_nb_spanning_tree(numDepb):
     nb_spanning_forests = []
     nombre_occurence = []
     dico = {}
+    moyenne_taille_coupe = 0
+    moyenne_log_nb_spanning_tree = 0
     for i in range(nb_dec):
-        decoupage = lignes[i+2].split()[a_supp:]
+        # decoupage = lignes[i+2].split()[a_supp:]
         taille_coupe = int(lignes[i+2].split()[a_supp -2])
         tailles_coupes.append(taille_coupe)
+        moyenne_taille_coupe += taille_coupe
         
         # nombre_occurence.append(taille_coupe)
         nb_spanning_forest = int(lignes[i+2].split()[a_supp-1])
+        moyenne_log_nb_spanning_tree += np.log(nb_spanning_forest)
         
         if taille_coupe in dico:
             dico[taille_coupe] += 1
@@ -1792,6 +1730,22 @@ def represente_taille_coupe_par_rapport_a_nb_spanning_tree(numDepb):
             dico[taille_coupe] = 1
         nombre_occurence.append(dico[taille_coupe])
         nb_spanning_forests.append(np.log(nb_spanning_forest))
+
+    if nb_dec > 0 : 
+        moyenne_log_nb_spanning_tree = moyenne_log_nb_spanning_tree / nb_dec 
+        moyenne_taille_coupe =moyenne_taille_coupe /nb_dec
+
+    numerateur = 0
+    somme_dev_x = 0
+    somme_dev_y = 0
+    for i in range(len(tailles_coupes)):
+        numerateur += (tailles_coupes[i] - moyenne_taille_coupe) * (nb_spanning_forests[i] - moyenne_log_nb_spanning_tree)
+        somme_dev_x +=  (tailles_coupes[i] - moyenne_taille_coupe) ** 2
+        somme_dev_y += (nb_spanning_forests[i] - moyenne_log_nb_spanning_tree) ** 2
+
+    denomi = np.sqrt(somme_dev_y * somme_dev_x)
+    if denomi > 0 : 
+        coef_de_correlation = numerateur/denomi
 
 
 
@@ -1802,6 +1756,14 @@ def represente_taille_coupe_par_rapport_a_nb_spanning_tree(numDepb):
     #v2 avec deux y-axis et avec légende
     fig, ax1 = plt.subplots()
     ax1.plot(tailles_coupes, nb_spanning_forests, "xg", label = "ax1 plot")
+
+
+
+    [m,p] = np.polyfit(np.array(tailles_coupes), np.array(nb_spanning_forests), 1)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print(m)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
     ax1.set_xlabel("cardinal de la coupe")
     ax1.set_ylabel("nombre de foret couvrante", color = 'b')
 
@@ -1812,13 +1774,14 @@ def represente_taille_coupe_par_rapport_a_nb_spanning_tree(numDepb):
     ax2.plot(tailles_coupes, nombre_occurence, ".r", label = "ax2 plot")
     ax2.set_ylabel("nombre de découpages", color = 'b')
 
-    fig.suptitle("Département " + str(numDep) + ", 5%" )
-    plt.savefig("graphiques/nb_spanning_tree_en_fonction_taille_coupe/dpt_" + str(numDep) + ".png")
+    fig.suptitle("Dpt " + str(numDep) + ", 5%, coef de corr : " + str(coef_de_correlation) + " \n m : " + str(m) + " p : " + str(p) )
+    plt.savefig("graphiques/nb_spanning_tree_en_fonction_taille_coupe/dpt_avec_coef_corr_" + str(numDep) + ".png")
     # plt.show()
-    return numDepb
+    # plt.close()
+    return numDepb, m, p
 
-def represente_nombre_decoupage_en_fonction_nombre_de_spanning_tree(nb_elts__de_la_fin_a_suppr):
-    nc, Lc, ns, Ls, decoup_init = lecture_bis()
+def represente_nombre_decoupage_en_fonction_nombre_de_spanning_tree(nb_elts__de_la_fin_a_suppr, nb_circos):
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
     mat_adj = graphadj(nc, Lc, ns, Ls)
     liste_adj = listeadj(mat_adj)
     epsilon = taux
@@ -1845,7 +1808,7 @@ def represente_nombre_decoupage_en_fonction_nombre_de_spanning_tree(nb_elts__de_
             dec.append(int(elt))
 
         CC = []
-        for i in range(nci):
+        for i in range(nb_circos):
             CC.append([])
         for i in range(len(decoup_en_c)):
             CC[int(decoup_en_c[i])].append(i)
@@ -1992,51 +1955,560 @@ def calcule_inegalite_raffinee(numDep):
 
 
 
+def coupling_from_the_past(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, taux):
 
-# def automatisation_de_calculs(liste_noms_et_nb_circos_departements):
-liste_noms_et_nb_circos_departements = [(3,3), (8,3), (10,3), (11, 3), (12, 3), (16, 3), (18,3), (39,3), (40,3), (41, 3), (47,3), (53, 3), (89, 3), (61, 3), (79,3), (81,3), (87,3)]
-#liste_noms_et_nb_circos_departements = [(13,16), (29,8), (31,10), (33, 12), (34,9), (35,8), (44,10), (38,10), (57,9), (59,21), (62,12), (67,9), (76,10), (77,11), (78,12), (83,8), (91,10), (92, 13), (93,12), (94,11), (95,10) ]
-
-liste_noms_et_nb_circos_departements = [(68,6), (74,6), (38,10), (57,9), (67,9), (83,8), (94,11) ,(31,10)]
-liste_noms_et_nb_circos_departements = [(87,3)]
-for elt in liste_noms_et_nb_circos_departements:
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("nouveau départment")
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    numDep = elt[0]
-    nomFichierEntree= "graphe_depts/" + str(numDep) + ".out"
-
-    if numDep < 10 : 
-
-        nomFichierDecoupInit = "actuel-5pour100/sortie0" + str(numDep) + ".txt"
-    else : 
-        nomFichierDecoupInit = "actuel-5pour100/sortie" + str(numDep) + ".txt"
-
-    ## Nombre de circonscriptions
-    nci=elt[1]
-    ## Taux d'ecart max a la moyenne (population)
-    taux = 0.05
-
-    #gestion de la Corse <>
-    if(numDep == '20'):
-        numDep = '2A'
-        nomFichierEntree = "graphe_depts/2A.out"
-    elif(numDep == '96'):
-        numDep = '2B'
-        nomFichierEntree = "graphe_depts/2B.out"
-
-    #Paris et Lyon sont gérés à part 
-
-    if(numDep == '75' or numDep == '69'):
-        sys.exit(1)
-    nomFichierSortie= "avec_dist_recom/sortie_Recom" + str(numDep) + ".txt"
+    #pour avoir la mat d'adj
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
+    # print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
+    mat_adj = graphadj(nc, Lc, ns, Ls)
+    liste_adj = listeadj(mat_adj)
+    epsilon = taux
 
 
-    #arguments : nb_decoupage (ie nb de samples),indice debut
-    genere_distribution(10,1)
-    fait_le_tableau()
-    # fait_histogramme()
-    # fait_histogramme_bis()
+    # mon_fichier = open(nomFichierSortie, "r")
+    # fichier_ecrire = "avec_dist_recom_pondere/tableau_sortie_Recom" + str(numDep) + ".txt"
+
+    #pour récupérer tous les découpages possibles
+    fichier_source = open(nomFichierDecoupInit, "r")
+    # fichier_sortie = open(fichier_ecrire, "w")
+    decoupages_possibles_avant = fichier_source.readlines()
+    a_supprimer = int(decoupages_possibles_avant[1].split()[0])
+    decoupages_possibles = decoupages_possibles_avant[2:]
+    fichier_source.close()
+
+    # lignes = mon_fichier.readlines()
+    # mon_fichier.close()
+    dico = {}
+    dico_differents_types = {}
+
+    # print("################")
+    # print(decoupages_possibles)
+    # print("#########")
+    for elt in decoupages_possibles : 
+        #si les decoupages ne sont pas encore normalisés : 
+        
+        e = elt.split()[a_supprimer:]
+
+        rr = formalise_decoupage(e, nb_circos)
+        #normalement rr est sous la forme d'entrée et de sortie de "un tour de Recom"
+        # print("decoupage")
+        # print(rr)
+
+        assert(str(rr) not in dico)
+        dico_differents_types[str(rr)] = rr
+        dico[str(rr)] = rr
+
+    moy_en_c = moyenne_initiale(dico[list(dico)[0]], nb_circos, Lc)
+    # print("on a la moy_en_c")
+
+    # print(dico)
+    liste_sans_doub = []
+    for elt in list(dico.values()):
+        if elt not in liste_sans_doub:
+            liste_sans_doub.append(elt)
+    nb_tours = 0
+    while len(liste_sans_doub) > 1: 
+        nb_tours += 1
+
+        if nb_tours % 100 == 0 : 
+            print("~~~~~~~~~~~~~ " + str(nb_tours) + " ~~~~~~~~~~~~")
+
+        if nb_tours > 50000:
+            print(dico)
+            raise TimeoutError
+    # for i in range(5):
+        print(len(liste_sans_doub))
+        
+
+
+
+
+        dico_bis = {}
+
+        # j = 0
+        for elt in dico : 
+        #     if j < 7:
+                # j += 1
+            dec = formalise_decoupage(un_tour_de_Recom(liste_adj, dico_differents_types[elt].copy(), moy_en_c, Lc,epsilon, nb_circos)[0], nb_circos)
+            # print("nv_dec")
+            # print(dico)
+            # print(dec)
+            # print(dico[str(dec)])
+            dico_bis[elt] = dico[str(dec)]
+        # print("dico bissssss")
+        # print(dico_bis)
+
+        for elt in dico : 
+            dico[elt] = dico_bis[elt].copy()
+        # dico.deepcopy(dico_bis)
+
+        liste_sans_doub = []
+        for elt in list(dico.values()):
+            if elt not in liste_sans_doub:
+                liste_sans_doub.append(elt)
+    # print("'''''''''''''''''''''''''''''''''''")
+    # print(dico)
+
+    return (dico[list(dico)[0]], nb_tours)
+
+
+def genere_distribution_cftp(nb_decoupages,  nb_circos, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie, taux):
+    liste_temps = []
+
+
+    print("on se lance dans le genere_distribution avec cftp")
+
+    # à changer si on n'est pas sur les mêmes fichiers .out !!
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
+    #ces deux lignes ne servent à rien, sont overlap par le paramètre !! en fait ce sont deux trucs différents
+    print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
+    nb_tours = 100 #int(input())
+    mat_adj = graphadj(nc, Lc, ns, Ls)
+    liste_adj = listeadj(mat_adj)
+    print(mat_adj)
+    print(liste_adj)
+    epsilon = taux
+
+    # raise ZeroDivisionError
+
+    monFichier=open(nomFichierSortie,"w")
+    F = []
+    
+    for i in range(nb_decoupages):
+        print("~~~~~~~~~~~~~~~~~~~~~~~~ " + str(i) + " ~~~~~~~~~~~~~~~~~~~~~~")
+
+        F = coupling_from_the_past(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, taux)
+        print("temps_prisssssss")
+        print(F[1])
+        liste_temps.append(F[1])
+        F_prime = formalise_decoupage(F[0], nb_circos)
+        card_coupe = calcule_card_de_la_coupe(F_prime, mat_adj)
+
+        
+
+
+        for li in F_prime:
+
+            monFichier.write(str(li)+" ") 
+        print(card_coupe)
+        monFichier.write(str(card_coupe))
+        monFichier.write("\n")
+
+    monFichier.close()
+    print(nb_tours)
+    
+    print("a priori tout à été écrit dans le fichier : " + nomFichierSortie)
+    return liste_temps
+
+def fait_le_tableau_cftp(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie):
+
+    #pour avoir la mat d'adj
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
+    print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
+    mat_adj = graphadj(nc, Lc, ns, Ls)
+    liste_adj = listeadj(mat_adj)
+    epsilon = taux
+
+
+
+
+    mon_fichier = open(nomFichierSortie, "r")
+    fichier_ecrire = "avec_dist_recom/cftp_tableau_sortie_Recom" + str(numDep) + ".txt"
+    fichier_source = open(nomFichierDecoupInit, "r")
+    fichier_sortie = open(fichier_ecrire, "w")
+    decoupages_possibles_avant = fichier_source.readlines()
+    a_supprimer = int(decoupages_possibles_avant[1].split()[0])
+    decoupages_possibles = decoupages_possibles_avant[2:]
+    fichier_source.close()
+
+    lignes = mon_fichier.readlines()
+    mon_fichier.close()
+    dico = {}
+    
+    for elt in decoupages_possibles : 
+        #si les decoupages ne sont pas encore normalisés : 
+        
+        e = elt.split()[a_supprimer:]
+        # print(e) 
+        # raise ZeroDivisionError
+        
+        e = e
+        rr = formalise_decoupage(e, nb_circos)
+        taille_coupe = calcule_card_de_la_coupe(rr, mat_adj)
+
+        CC = []
+        for j in range(a_supprimer):
+            CC.append([])
+        for j in range(len(rr)):
+            # print(int(decoupage[j]))
+            CC[int(rr[j])].append(j)
+
+        nombre_forets_couvrantes = math.ceil(calcule_nombre_de_foret_couvrante(mat_adj, CC))
+
+
+        print(rr)
+        elt = ""
+        for r in rr:
+            elt = elt + str(r) + " "
+
+        elt = elt[:-1] #voir s'il faut mettre -1, -2 ou -3, dépend du format du fichier
+
+        #on considère que les découpages sont déja formalisés
+        print("ééééé" + str(elt) + "ééééé")
+        assert(elt not in dico)
+        dico[elt] = (0,nombre_forets_couvrantes, taille_coupe)
+        
+
+    print("dicoo")
+    print(dico)
+    print(lignes)
+    for elt in lignes[:-1] :
+        taille_coupe = elt.split()[-1]
+        
+        tmp = elt.split()[:-1]
+        elt = ""
+        for f in tmp:
+            elt = elt + f + " "
+        elt = elt[:-1]
+
+
+
+        # elt = elt[:-3] # voir s'il faut mettre -1, -2 ou -3, depend du format du fichier
+        print("eltttt")
+        print("eeee" + elt + "eeeeeee") 
+        assert(elt in dico)
+        dico[elt] = (1+dico[elt][0], dico[elt][1], taille_coupe)
+
+    fichier_sortie.write(str(numDep) + "\n")
+    fichier_sortie.write(str(len(dico)) + "\n")
+
+
+    for elt in dico:
+
+        fichier_sortie.write(elt + " ")
+        #le nomre d'occurences
+        print(dico[elt][0])
+        fichier_sortie.write(str(round(dico[elt][0])) + " ")
+        #le nombre de spanning tree
+        print(dico[elt][1])
+        fichier_sortie.write(str(round(dico[elt][1])) + " ")
+        #le cardinal de la coupe
+        print(dico[elt][2])
+        fichier_sortie.write(str(dico[elt][2]) + "\n")
+
+    fichier_sortie.write(lignes[-1])
+
+    
+
+
+    fichier_sortie.close()
+
+def genere_distribution_cftp_qui_ecrase_distribution(nb_decoupages,  nb_circos, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie, taux, proba):
+    liste_temps = []
+
+
+    print("on se lance dans le genere_distribution avec cftp")
+
+    # à changer si on n'est pas sur les mêmes fichiers .out !!
+    nc, Lc, ns, Ls, decoup_init = lecture_bis(nomFichierEntree, nomFichierDecoupInit)
+    #ces deux lignes ne servent à rien, sont overlap par le paramètre !! en fait ce sont deux trucs différents
+    print("combien de tours :   ") # c'est la dernière ligne du fichier d'entrée (juste après le pourcentage d'erreur)
+    nb_tours = 100 #int(input())
+    mat_adj = graphadj(nc, Lc, ns, Ls)
+    liste_adj = listeadj(mat_adj)
+    print(mat_adj)
+    print(liste_adj)
+    epsilon = taux
+
+    # raise ZeroDivisionError
+
+    monFichier=open(nomFichierSortie,"w")
+    F = []
+    i = 0
+    while i < nb_decoupages:
+    
+        print("~~~~~~~~~~~~~~~~~~~~~~~~ " + str(i) + " ~~~~~~~~~~~~~~~~~~~~~~")
+
+        F = coupling_from_the_past(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, taux)
+        print("temps_prisssssss")
+        print(F[1])
+        liste_temps.append(F[1])
+        F_prime = formalise_decoupage(F[0], nb_circos)
+        card_coupe = calcule_card_de_la_coupe(F_prime, mat_adj)
+
+        nb_alea = random.random()
+        borne_acceptation = np.exp((-1) * card_coupe * proba)
+        if nb_alea > borne_acceptation :
+            #cas o`u on accepte le découpage
+
+            i += 1 
+
+            for li in F_prime:
+
+                monFichier.write(str(li)+" ") 
+            print(card_coupe)
+            monFichier.write(str(card_coupe))
+            monFichier.write("\n")
+        else : 
+            for li in F_prime:
+
+                monFichier.write(str(li)+" ") 
+            print(card_coupe)
+            monFichier.write(str(card_coupe))
+            monFichier.write(" bruhhhhhhhhh ")
+
+            monFichier.write("\n")
+
+    monFichier.close()
+    print(nb_tours)
+    
+    print("a priori tout à été écrit dans le fichier : " + nomFichierSortie)
+    return liste_temps
+
+
+# print(formalise_decoupage([0, 0, 1, 2, 2, 3, 4, 1, 2, 3, 5, 0, 5, 3, 4, 1, 4], 6))
+# raise ZeroDivisionError
+
+numDep = 68
+nb_circos = 6
+taux = 0.2
+
+nomFichierEntree= "graphe_depts/" + str(numDep) + ".out"
+
+if numDep < 10 : 
+
+    nomFichierDecoupInit = "actuel-20pour100/sortie0" + str(numDep) + ".txt"
+else : 
+    nomFichierDecoupInit = "actuel-20pour100/sortie" + str(numDep) + ".txt"
+nomFichierSortie = "avec_dist_recom/cftp_dpt" + str(numDep) + ".txt"
+
+# fait_le_tableau_cftp(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie)
+
+# fait_histogramme_bis(numDep,nb_circos, nomFichierEntree, nomFichierDecoupInit, "avec_dist_recom/cftp_tableau_sortie_Recom" + str(numDep) + ".txt" )
+print(genere_distribution_cftp_qui_ecrase_distribution(100, nb_circos, nomFichierEntree, nomFichierDecoupInit, nomFichierSortie, taux, 1/16))
+print("éééééééééééééééééééééééééééééééééééééééééé")
+
+
+numDep = 68
+nb_circos = 6
+taux = 0.2
+
+nomFichierEntree= "graphe_depts/" + str(numDep) + ".out"
+
+if numDep < 10 : 
+
+    nomFichierDecoupInit = "actuel-20pour100/sortie0" + str(numDep) + ".txt"
+else : 
+    nomFichierDecoupInit = "actuel-20pour100/sortie" + str(numDep) + ".txt"
+nomFichierSortie = "/home/apicquet/Desktop/tableau_sortie_Recom10.txt" 
+print(coupling_from_the_past(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, taux))
+print("éééééééééééééééééééééééééééééééééééééééééé")
+
+# fait_histogramme_bis(numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit)
+raise ZeroDivisionError
+
+
+
+
+# numDep = 21
+# nomFichierEntree= "graphe_depts/" + str(numDep) + ".out"
+
+# if numDep < 10 : 
+
+#     nomFichierDecoupInit = "actuel-5pour100/sortie0" + str(numDep) + ".txt"
+# else : 
+#     nomFichierDecoupInit = "actuel-5pour100/sortie" + str(numDep) + ".txt"
+
+# ## Nombre de circonscriptions
+# nci=5
+# ## Taux d'ecart max a la moyenne (population)
+# taux = 0.05
+
+# #gestion de la Corse <>
+# if(numDep == '20'):
+#     numDep = '2A'
+#     nomFichierEntree = "graphe_depts/2A.out"
+# elif(numDep == '96'):
+#     numDep = '2B'
+#     nomFichierEntree = "graphe_depts/2B.out"
+
+# #Paris et Lyon sont gérés à part 
+
+# if(numDep == '75' or numDep == '69'):
+#     sys.exit(1)
+# nomFichierSortie= "avec_dist_recom/sortie_Recom" + str(numDep) + ".txt"
+
+
+# arguments : nb_decoupage (ie nb de samples),indice debut
+# genere_distribution(100,1)
+# fait_le_tableau()
+# fait_histogramme()
+
+
+# no_fichier = "coef_pente_par_dpt.txt"
+# fichier = open(no_fichier, "w")
+
+
+# for i in range(1, 95):
+#     if i not in [75, 69,20,96]:
+#         if i not in [5,6, 12, 13, 22, 24, 25, 27, 28, 47, 31, 62]:
+#             print("num dpt  :   " + str(i))
+#             try :
+#                 e, m, p = represente_taille_coupe_par_rapport_a_nb_spanning_tree(i)
+#                 # tab_num_dpt.append(i)
+#                 fichier.write(str(i) + " ")
+
+#                 fichier.write(str(m) + " ")
+#                 fichier.write(str(p) + "\n")
+#                 # tab_coefs.append(m)
+
+
+#             except TypeError :
+#                 continue
+# fichier.close()
+
+# raise TimeoutError
+
+
+
+
+
+# tab_num_dpt = []
+# tab_coefs = []
+# tab_cste = []
+# no_fichier = "coef_pente_par_dpt.txt"
+
+# f = open(no_fichier, "r")
+# lignes = f.readlines()
+
+# if len(lignes) > 0 : 
+#     coef_min = (int(lignes[0].split()[0]),float(lignes[0].split()[1]))
+#     coef_max = (int(lignes[0].split()[0]),float(lignes[0].split()[1]))
+#     cste_min = (int(lignes[0].split()[0]),float(lignes[0].split()[2]))
+#     cste_max = (int(lignes[0].split()[0]),float(lignes[0].split()[2]))
+
+# for elt in lignes : 
+#     elt = elt.split()
+#     tab_num_dpt.append(int(elt[0]))
+
+#     tab_coefs.append(float(elt[1]))
+#     tab_cste.append(float(elt[2]))
+
+#     if float(elt[1]) > coef_max[1] : 
+#         coef_max = (int(elt[0]), float(elt[1]))
+#     if float(elt[1]) < coef_min[1]:
+#         coef_min = (int(elt[0]), float(elt[1]))
+#     if float(elt[2]) > cste_max[1] : 
+#         cste_max = (int(elt[0]), float(elt[2]))
+#     if float(elt[2]) < cste_min[1]:
+#         cste_min = (int(elt[0]), float(elt[2]))
+
+
+# moyenne = np.mean(np.array(tab_coefs))
+# mediane = np.median(np.array(tab_coefs))
+
+# moyenne_cste = np.mean(np.array(tab_cste))
+# mediane_cste = np.median(np.array(tab_cste))
+
+
+
+# #pour afficher les coefs de correlation : 
+# print("minimum : ")
+# print(coef_min)
+# print("maximum : ")
+# print(coef_max)
+
+# plt.plot(tab_num_dpt, tab_coefs, 'ro')
+# plt.plot([0], [moyenne], 'go', label = "moyenne")
+# plt.plot([0], [mediane], 'bo')
+# plt.ylabel('coef de corrélation')
+
+# #pour affichier le log de la constante
+# # print("minimum : ")
+# # print(cste_min)
+# # print("maximum : ")
+# # print(cste_max)
+# # plt.plot(tab_num_dpt, tab_cste, 'ro')
+# # plt.plot([0], [moyenne_cste], 'go', label = "moyenne")
+# # plt.plot([0], [mediane_cste], 'bo')
+# #plt.ylabel('log(constante)')
+
+
+# plt.xlabel('num dpt')
+
+# plt.show()
+
+# raise TypeError
+
+
+# plt.plot([0], [moyenne], 'go', label = "moyenne")
+# plt.plot([0], [mediane], 'bo')
+
+
+# plt.plot(tab_num_dpt, tab_coefs, 'ro')
+# plt.xlabel('num dpt')
+# plt.ylabel('coefs')
+# plt.show()
+# raise IndexError
+
+# for i in range(63,95):
+#     try : 
+#         print("~~~~~~~~~~~~~~~~~~~ " + str(i) + " ~~~~~~~~~~~~~~~~~~~~")
+#         represente_taille_coupe_par_rapport_a_nb_spanning_tree(i)
+#     except TypeError : continue
+
+# raise ZeroDivisionError
+
+
+
+
+
+
+
+# # def automatisation_de_calculs(liste_noms_et_nb_circos_departements):
+# liste_noms_et_nb_circos_departements = [(3,3), (8,3), (10,3), (11, 3), (12, 3), (16, 3), (18,3), (39,3), (40,3), (41, 3), (47,3), (53, 3), (89, 3), (61, 3), (79,3), (81,3), (87,3)]
+# #liste_noms_et_nb_circos_departements = [(13,16), (29,8), (31,10), (33, 12), (34,9), (35,8), (44,10), (38,10), (57,9), (59,21), (62,12), (67,9), (76,10), (77,11), (78,12), (83,8), (91,10), (92, 13), (93,12), (94,11), (95,10) ]
+
+# liste_noms_et_nb_circos_departements = [(68,6), (74,6), (38,10), (57,9), (67,9), (83,8), (94,11) ,(31,10)]
+# liste_noms_et_nb_circos_departements = [(87,3)]
+# for elt in liste_noms_et_nb_circos_departements:
+#     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+#     print("nouveau départment")
+#     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+#     numDep = elt[0]
+#     nomFichierEntree= "graphe_depts/" + str(numDep) + ".out"
+
+#     if numDep < 10 : 
+
+#         nomFichierDecoupInit = "actuel-5pour100/sortie0" + str(numDep) + ".txt"
+#     else : 
+#         nomFichierDecoupInit = "actuel-5pour100/sortie" + str(numDep) + ".txt"
+
+#     ## Nombre de circonscriptions
+#     nci=elt[1]
+#     ## Taux d'ecart max a la moyenne (population)
+#     taux = 0.05
+
+#     #gestion de la Corse <>
+#     if(numDep == '20'):
+#         numDep = '2A'
+#         nomFichierEntree = "graphe_depts/2A.out"
+#     elif(numDep == '96'):
+#         numDep = '2B'
+#         nomFichierEntree = "graphe_depts/2B.out"
+
+#     #Paris et Lyon sont gérés à part 
+
+#     if(numDep == '75' or numDep == '69'):
+#         sys.exit(1)
+#     nomFichierSortie= "avec_dist_recom/sortie_Recom" + str(numDep) + ".txt"
+
+
+#     #arguments : nb_decoupage (ie nb de samples),indice debut
+#     genere_distribution(10,1)
+#     fait_le_tableau()
+#     # fait_histogramme()
+#     # fait_histogramme_bis()
 
 
 # automatisation_de_calculs([(9,2)])
@@ -2044,7 +2516,7 @@ for elt in liste_noms_et_nb_circos_departements:
     
 
   
-# represente_nombre_decoupage_en_fonction_nombre_de_spanning_tree(nb_elts__de_la_fin_a_suppr=5)
+# represente_nombre_decoupage_en_fonction_nombre_de_spanning_tree(nb_elts__de_la_fin_a_suppr=5, nb_circos = 3)
 # calcule_une_fois_pour_toute_le_nombre_de_spanning_tree(numDep)
 # represente_taille_coupe_par_rapport_a_nb_spanning_tree()
 
@@ -2071,7 +2543,7 @@ for elt in liste_noms_et_nb_circos_departements:
 
 
 #arguments : nb_decoupage,indice debut
-genere_distribution(10,1)
+# genere_distribution(10,1)
 # fait_le_tableau()
 # fait_histogramme()
 # fait_histogramme_bis()
@@ -2085,6 +2557,60 @@ genere_distribution(10,1)
 
 #intéressant : 5, 50, 4, 9, 3, 
 # calcule_inegalite_raffinee(50)
+
+
+liste_departements_qui_nous_interessent = [(5,2), (32,2),
+                                           (12,3), (10,3)]
+#                                         #    (24,4), (50,4),
+#                                         #    (21,5), (22,5)]
+liste_departements_qui_nous_interessent_20_pour_cent = [(68,6), (74,6),
+                                                        (83,8), (57,9), (31,10), (94,11)]
+
+# liste_departements_qui_nous_interessent= []
+liste_departements_qui_nous_interessent_20_pour_cent= []
+dico_nb_aretes_qui_coupent = [(111111, {})]
+# liste_departements_qui_nous_interessent_20_pour_cent = [(31,10)]
+# liste_departements_qui_nous_interessent = []
+for (numDep, nb_circos) in liste_departements_qui_nous_interessent:
+    nomFichierEntree = "graphe_depts/"+ str(numDep) + ".out"
+
+    nomFichierSortie = "avec_dist_recom_pondere/sortie_Recom" + str(numDep) + ".txt"
+    if numDep < 10 : 
+
+        nomFichierDecoupInit = "actuel-5pour100/sortie0"+ str(numDep) + ".txt"
+    else : 
+        nomFichierDecoupInit = "actuel-5pour100/sortie"+ str(numDep) + ".txt"
+    taux = 0.05
+    # genere_distribution(1000, 0, nb_circos, dico_nb_aretes_qui_coupent)
+    # fait_le_tableau(numDep, nb_circos)
+    fait_histogramme_bis(numDep, nomFichierEntree, nomFichierDecoupInit, nb_circos)
+    #fait_histogramme_bis(numDep, nomFichierEntree, nomFichierDecoupInit, nb_circos)
+    # dico_nb_aretes_qui_coupent = genere_distribution(1000, 0, 1000, numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, dico_nb_aretes_qui_coupent)
+    print("||||||||||||||||||||||||||||||||||||||||||||||||")
+    print(dico_nb_aretes_qui_coupent)
+    print("||||||||||||||||||||||||||||||||||||||||||||||||")
+
+
+for (numDep, nb_circos) in liste_departements_qui_nous_interessent_20_pour_cent:
+    nomFichierEntree = "graphe_depts/"+ str(numDep) + ".out"
+
+    nomFichierSortie = "avec_dist_recom_pondere/sortie_Recom" + str(numDep) + ".txt"
+    if numDep < 10 : 
+
+        nomFichierDecoupInit = "actuel-20pour100/sortie0"+ str(numDep) + ".txt"
+    else : 
+        nomFichierDecoupInit = "actuel-20pour100/sortie"+ str(numDep) + ".txt"
+    taux = 0.2
+    # genere_distribution(1000, 0, dico_nb_aretes_qui_coupent)
+    # fait_le_tableau(numDep, nb_circos)
+    # calcule_une_fois_pour_toute_le_nombre_de_spanning_tree(numDep)
+    # dico_nb_aretes_qui_coupent = genere_distribution(1000, 0, 1000, numDep, nb_circos, nomFichierEntree, nomFichierDecoupInit, dico_nb_aretes_qui_coupent)
+    fait_histogramme_bis(numDep, nomFichierEntree, nomFichierDecoupInit, nb_circos)
+    print("||||||||||||||||||||||||||||||||||||||||||||||||")
+    print(dico_nb_aretes_qui_coupent)
+    print("||||||||||||||||||||||||||||||||||||||||||||||||")
+
+
 
 
 
